@@ -2,12 +2,12 @@ import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
 const idols = [
-  { name: 'Siddhivinayak', height: '2 feet', material: 'Premium POP', price: '₹2,500', tag: 'Bestseller', color: '#5B2C83' },
-  { name: 'Panchamukhi', height: '3 feet', material: 'Natural Clay', price: '₹4,200', tag: 'Eco-Friendly', color: '#22C55E' },
-  { name: 'Swarnamukhi', height: '1.5 feet', material: 'Gold-Painted POP', price: '₹1,800', tag: 'Premium', color: '#D4AF37' },
-  { name: 'Mahaganesha', height: '4 feet', material: 'Fiber Glass', price: '₹8,500', tag: 'Exclusive', color: '#EF4444' },
-  { name: 'Bal Ganesh', height: '1 foot', material: 'Natural Clay', price: '₹950', tag: 'Popular', color: '#5B2C83' },
-  { name: 'Shahi Ganesh', height: '3.5 feet', material: 'Premium POP', price: '₹5,500', tag: 'New', color: '#D4AF37' },
+  { name: 'Siddhivinayak', height: '2 feet', material: 'Premium POP', price: '₹2,500', tag: 'Bestseller', color: '#5B2C83', image: '/idol-siddhivinayak.png' },
+  { name: 'Panchamukhi', height: '3 feet', material: 'Natural Clay', price: '₹4,200', tag: 'Eco-Friendly', color: '#22C55E', image: '/idol-panchamukhi.png' },
+  { name: 'Swarnamukhi', height: '1.5 feet', material: 'Gold-Painted POP', price: '₹1,800', tag: 'Premium', color: '#D4AF37', image: '/idol-golden.png' },
+  { name: 'Mahaganesha', height: '4 feet', material: 'Fiber Glass', price: '₹8,500', tag: 'Exclusive', color: '#EF4444', image: '/idol-mahaganesha.png' },
+  { name: 'Bal Ganesh', height: '1 foot', material: 'Natural Clay', price: '₹950', tag: 'Popular', color: '#5B2C83', image: '/idol-bal.png' },
+  { name: 'Shahi Ganesh', height: '3.5 feet', material: 'Premium POP', price: '₹5,500', tag: 'New', color: '#D4AF37', image: '/idol-golden.png' },
 ];
 
 export function CatalogPreviewSection() {
@@ -53,9 +53,10 @@ export function CatalogPreviewSection() {
             >
               {/* Image Area */}
               <div style={{
-                height: 200, position: 'relative',
+                height: 240, position: 'relative',
                 background: `linear-gradient(135deg, ${idol.color}15, ${idol.color}08)`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                overflow: 'hidden'
               }}>
                 {/* Tag */}
                 <div style={{
@@ -63,11 +64,12 @@ export function CatalogPreviewSection() {
                   background: idol.color, color: 'white',
                   padding: '0.25rem 0.75rem', borderRadius: 9999,
                   fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '0.75rem',
+                  zIndex: 10
                 }}>
                   {idol.tag}
                 </div>
-                {/* Placeholder icon */}
-                <span style={{ fontSize: '4rem', fontFamily: 'Noto Sans Devanagari, sans-serif', color: idol.color, opacity: 0.6 }}>🪔</span>
+                {/* Image */}
+                <img src={idol.image} alt={idol.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
 
               {/* Info */}
