@@ -1,0 +1,199 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+/* Tailwind v4 theme configuration */
+@theme {
+  /* Brand Colors */
+  --color-primary: #5B2C83;
+  --color-primary-light: #7E4BAA;
+  --color-primary-dark: #3E1B5C;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #D4AF37;
+  --color-secondary-light: #EBD076;
+  --color-secondary-foreground: #1F2937;
+
+  --color-background: #FCFCFC;
+  --color-foreground: #1F2937;
+
+  --color-card: #ffffff;
+  --color-card-foreground: #1F2937;
+
+  --color-muted: #F3F4F6;
+  --color-muted-foreground: #6B7280;
+
+  --color-accent: #F3F4F6;
+  --color-accent-foreground: #1F2937;
+
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #ffffff;
+
+  --color-border: #E5E7EB;
+  --color-input: #E5E7EB;
+  --color-ring: #5B2C83;
+
+  --color-success: #22C55E;
+  --color-danger: #EF4444;
+
+  /* Typography */
+  --font-family-sans: 'Poppins', sans-serif;
+  --font-family-heading: 'Outfit', sans-serif;
+  --font-family-marathi: 'Noto Sans Devanagari', sans-serif;
+
+  /* Border Radius */
+  --radius: 0.5rem;
+}
+
+/* CSS variables for shadcn compatibility */
+:root {
+  --background: 0 0% 99%;
+  --foreground: 217 33% 17%;
+  --card: 0 0% 100%;
+  --card-foreground: 217 33% 17%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 217 33% 17%;
+  --primary: 272 50% 34%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 44 65% 53%;
+  --secondary-foreground: 217 33% 17%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222 47% 11%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 272 50% 34%;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: #FCFCFC;
+    color: #1F2937;
+    font-family: 'Poppins', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+    line-height: 1.6;
+  }
+
+  ::selection {
+    background-color: #5B2C83;
+    color: white;
+  }
+
+  /* Custom Scrollbar for a premium feel */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(91, 44, 131, 0.7);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+/* Utility classes */
+.font-marathi {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+}
+
+.text-primary {
+  color: #5B2C83;
+}
+
+.bg-primary {
+  background-color: #5B2C83;
+}
+
+.text-secondary {
+  color: #D4AF37;
+}
+
+.bg-secondary {
+  background-color: #D4AF37;
+}
+
+/* ══════════════════════════════════════════
+   GLOBAL MOBILE RESPONSIVENESS
+══════════════════════════════════════════ */
+
+/* Prevent horizontal overflow on all pages */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Better tap targets for mobile */
+@media (max-width: 768px) {
+  button, a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Countdown banner responsive fixes */
+  .countdown-illustration {
+    display: none !important;
+  }
+
+  /* Features section mobile padding */
+  section {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Card grids: 1 column on mobile */
+  [style*="grid-template-columns: repeat(3"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Catalog grid: 1 col on small mobile, 2 col on mid */
+  .catalog-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 768px) {
+  .catalog-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Hero section: stack on mobile */
+@media (max-width: 768px) {
+  .hero-right-col {
+    display: none;
+  }
+}
+
+/* Smooth image rendering */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Fluid typography safety */
+h1 { word-break: break-word; }
+h2 { word-break: break-word; }
+
+/* Premium focus ring */
+*:focus-visible {
+  outline: 2px solid #5B2C83;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
