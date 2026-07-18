@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Search, 
-  QrCode, 
-  ShieldCheck, 
-  CheckCircle2, 
-  ArrowRight 
-} from 'lucide-react';
+
 
 /* ─────────────────────────────────────────
    Animation Variants
@@ -42,29 +36,6 @@ export function FeaturesSection() {
     return () => clearInterval(timerId);
   }, []);
 
-
-  const bookingSteps = [
-    {
-      icon: Search,
-      title: 'Choose Your Idol',
-      desc: 'Browse our premium collection online.'
-    },
-    {
-      icon: QrCode,
-      title: 'Pay Advance',
-      desc: 'Pay advance securely using our UPI QR code.'
-    },
-    {
-      icon: ShieldCheck,
-      title: 'Admin Verification',
-      desc: 'Payment is manually verified by our team.'
-    },
-    {
-      icon: CheckCircle2,
-      title: 'Booking Confirmed',
-      desc: 'Receive confirmation on WhatsApp instantly.'
-    }
-  ];
 
   return (
     <section style={{ background: '#FCFCFC', padding: '5rem 0', overflow: 'hidden' }}>
@@ -207,148 +178,6 @@ export function FeaturesSection() {
         </motion.div>
 
 
-
-        {/* =========================================
-            SECTION 3: BOOKING PROCESS
-            ========================================= */}
-        <div style={{ paddingTop: '2rem' }}>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            style={{ textAlign: 'center', marginBottom: '4rem' }}
-          >
-            <h2 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)', color: '#1F2937', marginBottom: '1rem' }}>
-              Book Your Bappa in 4 Simple Steps
-            </h2>
-            <div style={{ height: 3, width: 60, background: 'linear-gradient(90deg, #5B2C83, #D4AF37)', borderRadius: 2, margin: '0 auto' }} />
-          </motion.div>
-
-          <div className="timeline-container" style={{ position: 'relative' }}>
-            {/* Horizontal Line for Desktop */}
-            <div className="timeline-line" style={{
-              position: 'absolute', top: '40px', left: '10%', right: '10%',
-              height: 2, background: 'rgba(91,44,131,0.1)', zIndex: 0
-            }} />
-
-            <div className="timeline-grid">
-              {bookingSteps.map((step, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-50px' }}
-                  transition={{ duration: 0.6, delay: index * 0.15 }}
-                  style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.1, boxShadow: '0 10px 25px rgba(212,175,55,0.25)' }}
-                    style={{
-                      width: 80, height: 80, borderRadius: '50%',
-                      background: 'white', border: '3px solid white',
-                      boxShadow: '0 8px 25px rgba(91,44,131,0.12)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      marginBottom: '1.5rem',
-                      position: 'relative',
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    <div style={{
-                      position: 'absolute', inset: 2, borderRadius: '50%',
-                      background: 'linear-gradient(135deg, #FCFCFC, #F3F4F6)', zIndex: -1
-                    }} />
-                    <step.icon size={32} style={{ color: '#D4AF37' }} />
-                    
-                    {/* Step Number Badge */}
-                    <div style={{
-                      position: 'absolute', top: -5, right: -5,
-                      width: 26, height: 26, borderRadius: '50%',
-                      background: '#5B2C83', color: 'white',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '0.85rem',
-                      boxShadow: '0 2px 8px rgba(91,44,131,0.3)'
-                    }}>
-                      {index + 1}
-                    </div>
-                  </motion.div>
-                  
-                  <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '1.1rem', color: '#1F2937', marginBottom: '0.5rem' }}>
-                    {step.title}
-                  </h3>
-                  <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.9rem', color: '#6B7280', margin: 0, lineHeight: 1.5, maxWidth: '240px' }}>
-                    {step.desc}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* =========================================
-            SECTION 4: BOTTOM CALL TO ACTION
-            ========================================= */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          whileHover={{ scale: 1.01 }}
-          style={{
-            background: 'white',
-            borderRadius: '24px',
-            padding: '3.5rem 2rem',
-            textAlign: 'center',
-            border: '2px solid rgba(91,44,131,0.08)',
-            boxShadow: '0 15px 35px rgba(0,0,0,0.04)',
-            maxWidth: '800px',
-            margin: '2rem auto 0',
-            position: 'relative',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Decorative accents */}
-          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 4, background: 'linear-gradient(90deg, #5B2C83, #D4AF37)' }} />
-          
-          <h2 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: 'clamp(1.75rem, 3.5vw, 2.25rem)', color: '#1F2937', marginBottom: '1rem' }}>
-            Reserve Your Ganpati Before It's Booked
-          </h2>
-          <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '1.05rem', color: '#6B7280', margin: '0 auto 2.5rem', maxWidth: '500px', lineHeight: 1.6 }}>
-            Our handcrafted idols are available in limited quantity. Reserve yours today with a simple QR-based booking process.
-          </p>
-          
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1rem' }}>
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2, boxShadow: '0 8px 25px rgba(91,44,131,0.35)' }}
-              whileTap={{ scale: 0.97 }}
-              style={{
-                background: '#5B2C83', color: 'white',
-                border: 'none', borderRadius: 9999,
-                padding: '0.875rem 2rem',
-                fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '1rem',
-                display: 'flex', alignItems: 'center', gap: '0.5rem',
-                cursor: 'pointer', transition: 'background 0.2s',
-              }}
-            >
-              Explore Collection
-              <ArrowRight size={18} />
-            </motion.button>
-            
-            <motion.button
-              whileHover={{ scale: 1.05, background: 'rgba(91,44,131,0.04)' }}
-              whileTap={{ scale: 0.97 }}
-              style={{
-                background: 'white', color: '#5B2C83',
-                border: '1.5px solid #5B2C83', borderRadius: 9999,
-                padding: '0.875rem 2rem',
-                fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '1rem',
-                cursor: 'pointer', transition: 'background 0.2s',
-              }}
-            >
-              Contact on WhatsApp
-            </motion.button>
-          </div>
-        </motion.div>
 
       </div>
 

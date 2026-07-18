@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Package, ShieldCheck } from 'lucide-react';
 import { AdminLayout } from '../components/AdminLayout';
 import { StatCard, SectionHeader, Card, StatusBadge } from '../components/AdminUI';

@@ -4,7 +4,6 @@ import { Plus, Search, Edit2, Trash2, Eye } from 'lucide-react';
 import { AdminLayout } from '../components/AdminLayout';
 import { StatusBadge, Btn, Card, Modal, EmptyState } from '../components/AdminUI';
 import { useIdols } from '@/context/IdolContext';
-import type { Idol } from '../data/mockData';
 
 const MATERIALS = ['All', 'Shadu Mati', 'Plaster of Paris', 'Fiber', 'Eco-Friendly', 'Marble'];
 const STATUSES = ['all', 'available', 'sold out'];

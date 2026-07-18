@@ -71,7 +71,22 @@ export function IdolProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (e) {
       console.error("Backend error, falling back to local state", e);
-      // Fallback
+      // Fallback: convert file to Base64 to store in localStorage
+      let imageUrl = '/ganesh-hero.png';
+      const file = formData.get('image') as File;
+      if (file && file.size > 0) {
+        try {
+          imageUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        } catch (err) {
+          console.error("Failed to read image as Base64", err);
+        }
+      }
+
       const newIdol: Idol = {
         id: `i${Date.now()}`,
         name: formData.get('name') as string,
@@ -80,7 +95,7 @@ export function IdolProvider({ children }: { children: React.ReactNode }) {
         material: formData.get('material') as any,
         description: formData.get('description') as string,
         status: formData.get('status') as any,
-        images: ['/ganesh-hero.png'], // Fake URL since file can't be uploaded locally without backend
+        images: [imageUrl],
         createdAt: new Date().toISOString().slice(0, 10),
       };
       setIdols(prev => [newIdol, ...prev]);

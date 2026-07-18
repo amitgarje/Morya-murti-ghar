@@ -1,14 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /* ─────────────────────────────────────────
    Loader: Phase 1 = video intro, Phase 2 = welcome screen
 ───────────────────────────────────────── */
 export function Loader() {
-  const [phase, setPhase] = useState<'video' | 'welcome-in' | 'welcome-out' | 'done'>('video');
+  const [phase, setPhase] = useState<'welcome-in' | 'welcome-out' | 'done'>('welcome-in');
   const [textPhase, setTextPhase] = useState<'english' | 'marathi'>('english');
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
   // Check if already shown in this session to avoid showing every page navigation
   const [visible] = useState(() => {
@@ -48,21 +46,15 @@ export function Loader() {
     playTone(639, 0.5, 1.5, 0.10);
     playTone(396, 0.0, 0.8, 0.08);
 
-    // VIDEO phase: ends after 10s
-    const videoTimer = setTimeout(() => {
-      setPhase('welcome-in');
-    }, 10000);
-
-    // Welcome phase timings
-    const t1 = setTimeout(() => setTextPhase('marathi'), 11500);
-    const t2 = setTimeout(() => setPhase('welcome-out'), 13000);
+    // Welcome phase timings (adjusted for no video)
+    const t1 = setTimeout(() => setTextPhase('marathi'), 1500);
+    const t2 = setTimeout(() => setPhase('welcome-out'), 3000);
     const t3 = setTimeout(() => {
       setPhase('done');
       sessionStorage.setItem('morya_loader_shown', 'true');
-    }, 13700);
+    }, 3700);
 
     return () => {
-      clearTimeout(videoTimer);
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
@@ -74,100 +66,6 @@ export function Loader() {
 
   return (
     <AnimatePresence>
-      {/* ── PHASE 1: VIDEO INTRO ── */}
-      {phase === 'video' && (
-        <motion.div
-          key="video-phase"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 9999,
-            background: 'linear-gradient(135deg, #3E1B5C 0%, #5B2C83 50%, #2A1240 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Decorative background radials to blend with white video */}
-          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(91,44,131,0.0) 0%, rgba(62,27,92,0.95) 70%)', pointerEvents: 'none', zIndex: 1 }} />
-
-          {/* Animated rings */}
-          {[0, 1, 2].map(i => (
-            <motion.div
-              key={i}
-              animate={{ rotate: i % 2 === 0 ? 360 : -360, scale: [1, 1.02, 1] }}
-              transition={{ rotate: { duration: 15 + i * 5, repeat: Infinity, ease: 'linear' }, scale: { duration: 3, repeat: Infinity, ease: 'easeInOut' } }}
-              style={{
-                position: 'absolute',
-                width: 300 + i * 150, height: 300 + i * 150,
-                borderRadius: '50%',
-                border: `1px solid rgba(212,175,55,${0.15 - i * 0.04})`,
-                pointerEvents: 'none',
-                zIndex: 0,
-              }}
-            />
-          ))}
-
-          {/* Gold corner accents */}
-          <div style={{ position: 'absolute', top: 20, left: 20, width: 60, height: 60, borderTop: '2px solid rgba(212,175,55,0.5)', borderLeft: '2px solid rgba(212,175,55,0.5)', zIndex: 2 }} />
-          <div style={{ position: 'absolute', top: 20, right: 20, width: 60, height: 60, borderTop: '2px solid rgba(212,175,55,0.5)', borderRight: '2px solid rgba(212,175,55,0.5)', zIndex: 2 }} />
-          <div style={{ position: 'absolute', bottom: 20, left: 20, width: 60, height: 60, borderBottom: '2px solid rgba(212,175,55,0.5)', borderLeft: '2px solid rgba(212,175,55,0.5)', zIndex: 2 }} />
-          <div style={{ position: 'absolute', bottom: 20, right: 20, width: 60, height: 60, borderBottom: '2px solid rgba(212,175,55,0.5)', borderRight: '2px solid rgba(212,175,55,0.5)', zIndex: 2 }} />
-
-          {/* Video container — white background removed via mix-blend-mode */}
-          <motion.div
-            initial={{ scale: 0.85, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            style={{ position: 'relative', zIndex: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}
-          >
-            <div style={{
-              borderRadius: '50%',
-              overflow: 'hidden',
-              width: 'min(340px, 70vw)',
-              height: 'min(340px, 70vw)',
-              boxShadow: '0 0 60px rgba(212,175,55,0.35), 0 0 120px rgba(212,175,55,0.15)',
-              border: '2px solid rgba(212,175,55,0.3)',
-              background: 'transparent',
-            }}>
-              <video
-                ref={videoRef}
-                src="/Logo_for_website_loader_202607181002.mp4"
-                autoPlay
-                playsInline
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  // mix-blend-mode removes the white background
-                  mixBlendMode: 'multiply',
-                  filter: 'brightness(1.1) contrast(1.1)',
-                }}
-              />
-            </div>
-
-            {/* Branding below video */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              style={{ textAlign: 'center' }}
-            >
-              <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: 'clamp(0.7rem, 2vw, 0.85rem)', color: 'rgba(212,175,55,0.75)', letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 6px' }}>
-                Welcome to
-              </p>
-              <h1 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 800, fontSize: 'clamp(1.6rem, 5vw, 2.4rem)', color: 'white', letterSpacing: '-0.02em', margin: 0 }}>
-                Morya Murti Ghar
-              </h1>
-              <p style={{ fontFamily: 'Noto Sans Devanagari, sans-serif', fontSize: 'clamp(0.75rem, 2vw, 0.9rem)', color: 'rgba(212,175,55,0.7)', margin: '6px 0 0' }}>
-                🕉️ गणपती बाप्पा मोरया 🕉️
-              </p>
-            </motion.div>
-          </motion.div>
-        </motion.div>
-      )}
-
       {/* ── PHASE 2: WELCOME SCREEN ── */}
       {(phase === 'welcome-in' || phase === 'welcome-out') && (
         <motion.div

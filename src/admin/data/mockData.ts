@@ -14,6 +14,7 @@ export interface Idol {
   images: string[];
   description: string;
   createdAt: string;
+  [key: string]: any;
 }
 
 export interface Booking {
@@ -29,6 +30,7 @@ export interface Booking {
   paymentProof: string;
   createdAt: string;
   notes?: string;
+  [key: string]: any;
 }
 
 export interface Customer {
@@ -37,8 +39,9 @@ export interface Customer {
   phone: string;
   address: string;
   bookingCount: number;
-  totalSpent: number;
   lastBooking: string;
+  createdAt?: string;
+  [key: string]: any;
 }
 
 // ─── IDOLS ────────────────────────────────────────────────────────────────────

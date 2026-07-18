@@ -155,7 +155,7 @@ export function BookingDetailsPage() {
           <Card style={{ padding: 20 }}>
             <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '0.95rem', color: '#1F2937', margin: '0 0 16px' }}>Booking Timeline</h3>
             <div style={{ position: 'relative' }}>
-              {booking.timeline.map((t, i) => (
+              {(booking.timeline as any[]).map((t: any, i: number) => (
                 <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}
                   style={{ display: 'flex', gap: 14, marginBottom: i < booking.timeline.length - 1 ? 20 : 0, position: 'relative' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
