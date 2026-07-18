@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Package, BookOpen, ClipboardList, Users,
   Wand2, Settings, LogOut, ChevronLeft, ChevronRight,
-  Zap, BarChart2,
+  Zap, BarChart2, X,
 } from 'lucide-react';
 
 const NAV = [
@@ -18,13 +18,15 @@ const NAV = [
   { label: 'Settings', to: '/admin/settings', icon: Settings },
 ];
 
-
 interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+  mobileOpen: boolean;
+  isMobile: boolean;
+  onMobileClose: () => void;
 }
 
-export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
+export function AdminSidebar({ collapsed, onToggle, mobileOpen, isMobile, onMobileClose }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { logoutAdmin } = useAuth();
@@ -34,45 +36,74 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
     return location.pathname.startsWith(to);
   };
 
+  // On mobile: sidebar is a drawer (slides in from left)
+  // On desktop: sidebar is always visible, can be collapsed
+  const showLabels = isMobile ? true : !collapsed;
+  const sidebarWidth = isMobile ? 260 : (collapsed ? 72 : 240);
+  const translateX = isMobile ? (mobileOpen ? 0 : -280) : 0;
+
   return (
     <motion.aside
-      animate={{ width: collapsed ? 72 : 240 }}
+      animate={{
+        width: isMobile ? 260 : (collapsed ? 72 : 240),
+        x: translateX,
+      }}
       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
       style={{
-        position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 200,
+        position: 'fixed', top: 0, left: 0, bottom: 0,
+        zIndex: isMobile ? 200 : 200,
         background: '#1F1F2E',
         display: 'flex', flexDirection: 'column',
         overflow: 'hidden',
         boxShadow: '4px 0 24px rgba(0,0,0,0.15)',
+        width: sidebarWidth,
       }}
     >
       {/* Logo */}
       <div style={{
         height: 64, display: 'flex', alignItems: 'center',
-        padding: collapsed ? '0 16px' : '0 20px',
+        padding: showLabels ? '0 20px' : '0 16px',
         borderBottom: '1px solid rgba(255,255,255,0.06)',
-        flexShrink: 0, gap: 12, justifyContent: collapsed ? 'center' : 'flex-start',
+        flexShrink: 0, gap: 12,
+        justifyContent: showLabels ? 'space-between' : 'center',
       }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-          background: 'linear-gradient(135deg, #5B2C83, #7E4BAA)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 12px rgba(91,44,131,0.5)',
-        }}>
-          <Zap size={18} color="#D4AF37" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+            background: 'linear-gradient(135deg, #5B2C83, #7E4BAA)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(91,44,131,0.5)',
+          }}>
+            <Zap size={18} color="#D4AF37" />
+          </div>
+          <AnimatePresence>
+            {showLabels && (
+              <motion.div
+                initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }}
+                transition={{ duration: 0.2 }}
+                style={{ overflow: 'hidden', whiteSpace: 'nowrap' }}
+              >
+                <div style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '0.95rem', color: 'white', letterSpacing: '-0.3px' }}>Morya Murti Ghar</div>
+                <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.68rem', color: 'rgba(255,255,255,0.4)', marginTop: 1 }}>Admin Dashboard</div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-        <AnimatePresence>
-          {!collapsed && (
-            <motion.div
-              initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }}
-              transition={{ duration: 0.2 }}
-              style={{ overflow: 'hidden', whiteSpace: 'nowrap' }}
-            >
-              <div style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '0.95rem', color: 'white', letterSpacing: '-0.3px' }}>Morya Murti Ghar</div>
-              <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.68rem', color: 'rgba(255,255,255,0.4)', marginTop: 1 }}>Admin Dashboard</div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+
+        {/* Close button on mobile */}
+        {isMobile && (
+          <button
+            onClick={onMobileClose}
+            style={{
+              background: 'rgba(255,255,255,0.08)', border: 'none',
+              borderRadius: 8, width: 32, height: 32,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', color: 'rgba(255,255,255,0.6)', flexShrink: 0,
+            }}
+          >
+            <X size={16} />
+          </button>
+        )}
       </div>
 
       {/* Nav */}
@@ -84,23 +115,22 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
             <NavLink
               key={item.to}
               to={item.to}
-              title={collapsed ? item.label : undefined}
+              title={!showLabels ? item.label : undefined}
               style={{
                 display: 'flex', alignItems: 'center',
-                gap: 12, padding: collapsed ? '10px 16px' : '10px 14px',
+                gap: 12, padding: showLabels ? '11px 14px' : '10px 16px',
                 borderRadius: 10, textDecoration: 'none',
-                justifyContent: collapsed ? 'center' : 'flex-start',
+                justifyContent: showLabels ? 'flex-start' : 'center',
                 background: active ? 'rgba(91,44,131,0.3)' : 'transparent',
                 borderLeft: active ? '2px solid #5B2C83' : '2px solid transparent',
                 transition: 'all 0.18s ease',
-                position: 'relative',
               }}
               onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)'; }}
               onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
               <Icon size={18} color={active ? '#A78BDB' : 'rgba(255,255,255,0.5)'} style={{ flexShrink: 0 }} />
               <AnimatePresence>
-                {!collapsed && (
+                {showLabels && (
                   <motion.span
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     transition={{ duration: 0.15 }}
@@ -124,12 +154,12 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
         {/* Logout */}
         <button
           onClick={() => { logoutAdmin(); navigate('/'); }}
-          title={collapsed ? 'Logout' : undefined}
+          title={!showLabels ? 'Logout' : undefined}
           style={{
             display: 'flex', alignItems: 'center', gap: 12, width: '100%',
-            padding: collapsed ? '10px 16px' : '10px 14px',
+            padding: showLabels ? '11px 14px' : '10px 16px',
             borderRadius: 10, border: 'none', background: 'transparent',
-            cursor: 'pointer', justifyContent: collapsed ? 'center' : 'flex-start',
+            cursor: 'pointer', justifyContent: showLabels ? 'flex-start' : 'center',
             transition: 'background 0.18s',
           }}
           onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239,68,68,0.1)')}
@@ -137,7 +167,7 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
         >
           <LogOut size={18} color="rgba(239,68,68,0.7)" style={{ flexShrink: 0 }} />
           <AnimatePresence>
-            {!collapsed && (
+            {showLabels && (
               <motion.span
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
@@ -149,21 +179,23 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
           </AnimatePresence>
         </button>
 
-        {/* Collapse toggle */}
-        <button
-          onClick={onToggle}
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: '100%', padding: '8px', borderRadius: 10,
-            border: '1px solid rgba(255,255,255,0.08)', background: 'transparent',
-            cursor: 'pointer', color: 'rgba(255,255,255,0.35)', transition: 'background 0.18s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-        </button>
+        {/* Collapse toggle — desktop only */}
+        {!isMobile && (
+          <button
+            onClick={onToggle}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '100%', padding: '8px', borderRadius: 10,
+              border: '1px solid rgba(255,255,255,0.08)', background: 'transparent',
+              cursor: 'pointer', color: 'rgba(255,255,255,0.35)', transition: 'background 0.18s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+        )}
       </div>
     </motion.aside>
   );

@@ -9,7 +9,7 @@ const MATERIALS = ['All', 'Shadu Mati', 'Plaster of Paris', 'Fiber', 'Eco-Friend
 const STATUSES = ['all', 'available', 'sold out'];
 
 export function ManageIdolsPage() {
-  const { idols, addIdol, deleteIdol } = useIdols();
+  const { idols, resolvedImages, addIdol, deleteIdol } = useIdols();
   const [search, setSearch] = useState('');
   const [filterMat, setFilterMat] = useState('All');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -33,7 +33,7 @@ export function ManageIdolsPage() {
   return (
     <AdminLayout>
       {/* Toolbar */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 20, alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="admin-toolbar" style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 20, alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', flex: 1 }}>
           {/* Search */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', borderRadius: 10, border: '1px solid rgba(0,0,0,0.08)', background: 'white', minWidth: 220 }}>
@@ -69,7 +69,7 @@ export function ManageIdolsPage() {
       {filtered.length === 0 ? (
         <Card><EmptyState icon="🛕" title="No idols found" desc="Try adjusting your filters or add a new idol." /></Card>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 18 }}>
+        <div className="admin-idol-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 18 }}>
           {filtered.map((idol, i) => (
             <motion.div
               key={idol.id}
@@ -85,7 +85,7 @@ export function ManageIdolsPage() {
             >
               {/* Image */}
               <div style={{ height: 180, background: 'linear-gradient(135deg, #F9FAFB, #F3F4F6)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                <img src={idol.images[0]} alt={idol.name} style={{ height: '85%', objectFit: 'contain', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.1))' }} />
+                <img src={resolvedImages[idol.id] || idol.images[0]} alt={idol.name} style={{ height: '85%', objectFit: 'contain', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.1))' }} />
                 <div style={{ position: 'absolute', top: 10, right: 10 }}>
                   <StatusBadge status={idol.status} />
                 </div>

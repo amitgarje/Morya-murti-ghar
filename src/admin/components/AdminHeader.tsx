@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Bell, Sun, Moon, ChevronDown, User, Settings, LogOut } from 'lucide-react';
+import { Search, Bell, Sun, Moon, ChevronDown, User, Settings, LogOut, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
@@ -18,9 +18,11 @@ const PAGE_TITLES: Record<string, string> = {
 interface AdminHeaderProps {
   sidebarCollapsed: boolean;
   pathname: string;
+  isMobile: boolean;
+  onMenuClick: () => void;
 }
 
-export function AdminHeader({ sidebarCollapsed, pathname }: AdminHeaderProps) {
+export function AdminHeader({ sidebarCollapsed, pathname, isMobile, onMenuClick }: AdminHeaderProps) {
   const { logoutAdmin } = useAuth();
   const [dark, setDark] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -37,51 +39,77 @@ export function AdminHeader({ sidebarCollapsed, pathname }: AdminHeaderProps) {
     { id: 3, msg: 'Idol delivered: Raja Ganapati', time: '2 days ago', unread: false },
   ];
 
+  const leftOffset = isMobile ? 0 : (sidebarCollapsed ? 72 : 240);
+
   return (
     <header style={{
       position: 'fixed', top: 0, right: 0, zIndex: 100,
-      left: sidebarCollapsed ? 72 : 240,
+      left: leftOffset,
       height: 64,
       background: dark ? '#0F0F1A' : 'rgba(247,248,250,0.95)',
       backdropFilter: 'blur(16px)',
       borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '0 24px',
+      padding: isMobile ? '0 12px' : '0 24px',
       transition: 'left 0.25s ease',
-      gap: 16,
+      gap: 12,
     }}>
-      {/* Page Title + Date */}
-      <div>
-        <h1 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '1.1rem', color: dark ? 'white' : '#1F2937', margin: 0 }}>
-          {title}
-        </h1>
-        <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.72rem', color: dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF', margin: 0, marginTop: 1 }}>
-          {today}
-        </p>
+      {/* Left: Hamburger on mobile, Title + Date on desktop */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+        {isMobile && (
+          <button
+            onClick={onMenuClick}
+            style={{
+              width: 38, height: 38, borderRadius: 10, border: 'none',
+              background: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', flexShrink: 0,
+            }}
+          >
+            <Menu size={20} color={dark ? 'rgba(255,255,255,0.8)' : '#374151'} />
+          </button>
+        )}
+        <div style={{ minWidth: 0 }}>
+          <h1 style={{
+            fontFamily: 'Outfit, sans-serif', fontWeight: 700,
+            fontSize: isMobile ? '1rem' : '1.1rem',
+            color: dark ? 'white' : '#1F2937', margin: 0,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>
+            {title}
+          </h1>
+          {!isMobile && (
+            <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.72rem', color: dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF', margin: 0, marginTop: 1 }}>
+              {today}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Right Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 8 }}>
 
-        {/* Search */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '7px 14px', borderRadius: 10,
-          background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-          border: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)'}`,
-          minWidth: 200,
-        }}>
-          <Search size={15} color={dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF'} />
-          <input
-            placeholder="Search bookings, customers..."
-            style={{
-              border: 'none', background: 'transparent', outline: 'none',
-              fontFamily: 'Poppins, sans-serif', fontSize: '0.82rem',
-              color: dark ? 'rgba(255,255,255,0.8)' : '#374151',
-              width: '100%',
-            }}
-          />
-        </div>
+        {/* Search — desktop only */}
+        {!isMobile && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '7px 14px', borderRadius: 10,
+            background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+            border: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)'}`,
+            minWidth: 200,
+          }}>
+            <Search size={15} color={dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF'} />
+            <input
+              placeholder="Search bookings, customers..."
+              style={{
+                border: 'none', background: 'transparent', outline: 'none',
+                fontFamily: 'Poppins, sans-serif', fontSize: '0.82rem',
+                color: dark ? 'rgba(255,255,255,0.8)' : '#374151',
+                width: '100%',
+              }}
+            />
+          </div>
+        )}
 
         {/* Dark Mode */}
         <button
@@ -120,7 +148,9 @@ export function AdminHeader({ sidebarCollapsed, pathname }: AdminHeaderProps) {
                 transition={{ duration: 0.18 }}
                 style={{
                   position: 'absolute', top: '100%', right: 0, marginTop: 8,
-                  width: 320, background: 'white', borderRadius: 14,
+                  width: isMobile ? 'calc(100vw - 32px)' : 320,
+                  maxWidth: 320,
+                  background: 'white', borderRadius: 14,
                   boxShadow: '0 16px 48px rgba(0,0,0,0.12)', border: '1px solid rgba(0,0,0,0.06)',
                   overflow: 'hidden', zIndex: 500,
                 }}
@@ -153,7 +183,8 @@ export function AdminHeader({ sidebarCollapsed, pathname }: AdminHeaderProps) {
           <button
             onClick={() => { setShowProfile(p => !p); setShowNotifs(false); }}
             style={{
-              display: 'flex', alignItems: 'center', gap: 8, padding: '4px 10px 4px 4px',
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: isMobile ? '4px' : '4px 10px 4px 4px',
               borderRadius: 10, border: `1px solid ${dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.07)'}`,
               background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)', cursor: 'pointer',
             }}
@@ -164,8 +195,12 @@ export function AdminHeader({ sidebarCollapsed, pathname }: AdminHeaderProps) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '0.8rem', color: 'white',
             }}>A</div>
-            <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.82rem', color: dark ? 'rgba(255,255,255,0.8)' : '#374151', fontWeight: 500 }}>Admin</span>
-            <ChevronDown size={13} color={dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF'} />
+            {!isMobile && (
+              <>
+                <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.82rem', color: dark ? 'rgba(255,255,255,0.8)' : '#374151', fontWeight: 500 }}>Admin</span>
+                <ChevronDown size={13} color={dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF'} />
+              </>
+            )}
           </button>
           <AnimatePresence>
             {showProfile && (

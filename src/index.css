@@ -157,12 +157,7 @@ html, body {
     padding-right: 1rem !important;
   }
 
-  /* Card grids: 1 column on mobile */
-  [style*="grid-template-columns: repeat(3"] {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Catalog grid: 1 col on small mobile, 2 col on mid */
+  /* Catalog grid: 1 col on small mobile */
   .catalog-grid {
     grid-template-columns: 1fr !important;
   }
@@ -178,6 +173,75 @@ html, body {
 @media (max-width: 768px) {
   .hero-right-col {
     display: none;
+  }
+}
+
+/* ══════════════════════════════════════════
+   ADMIN PANEL MOBILE RESPONSIVENESS
+══════════════════════════════════════════ */
+
+/* Admin stat cards: 2 col on mobile */
+@media (max-width: 640px) {
+  .admin-stat-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+
+/* Admin idol grid: 1-2 col on mobile */
+@media (max-width: 640px) {
+  .admin-idol-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+@media (min-width: 420px) and (max-width: 640px) {
+  .admin-idol-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Admin tables: horizontal scroll on mobile */
+.admin-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Admin toolbar: stack on mobile */
+@media (max-width: 640px) {
+  .admin-toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .admin-toolbar > * {
+    width: 100%;
+  }
+}
+
+/* Admin filter pills: scroll horizontally on mobile */
+@media (max-width: 640px) {
+  .admin-filter-pills {
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+  .admin-filter-pills button {
+    flex-shrink: 0;
+  }
+}
+
+/* Modal responsive width */
+@media (max-width: 600px) {
+  .modal-content {
+    border-radius: 16px 16px 0 0 !important;
+  }
+}
+
+/* Admin chart containers: horizontal scroll on mobile */
+@media (max-width: 640px) {
+  .admin-chart-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

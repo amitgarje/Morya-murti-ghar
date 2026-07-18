@@ -4,7 +4,7 @@ import { StatCard, SectionHeader, Card, StatusBadge } from '../components/AdminU
 import { useIdols } from '@/context/IdolContext';
 
 export function AdminDashboardPage() {
-  const { idols } = useIdols();
+  const { idols, resolvedImages } = useIdols();
   const totalIdols = idols.length;
   const availableIdols = idols.filter(i => i.status === 'available').length;
   const soldOutIdols = idols.filter(i => i.status === 'sold out').length;
@@ -21,7 +21,7 @@ export function AdminDashboardPage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
 
         {/* ── Stat Cards ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16 }}>
+        <div className="admin-stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16 }}>
           {stats.map((s, i) => (
             <StatCard key={s.title} {...s} delay={i * 0.05} />
           ))}
@@ -49,7 +49,7 @@ export function AdminDashboardPage() {
                   >
                     <td style={{ padding: '14px 16px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <img src={b.images[0] || '/ganesh-hero.png'} alt={b.name} style={{ width: 32, height: 32, objectFit: 'contain', borderRadius: 6, background: '#F3F4F6' }} />
+                        <img src={resolvedImages[b.id] || b.images[0] || '/ganesh-hero.png'} alt={b.name} style={{ width: 32, height: 32, objectFit: 'contain', borderRadius: 6, background: '#F3F4F6' }} />
                         <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.82rem', color: '#374151', fontWeight: 500 }}>{b.name}</span>
                       </div>
                     </td>

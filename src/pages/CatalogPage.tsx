@@ -44,7 +44,7 @@ const cardVariant = {
    Catalog Page Component
 ───────────────────────────────────────── */
 export function CatalogPage() {
-  const { idols: rawIdols } = useIdols();
+  const { idols: rawIdols, resolvedImages } = useIdols();
   const [searchTerm, setSearchTerm] = useState('');
   const [heightFilter, setHeightFilter] = useState('All');
   const [materialFilter, setMaterialFilter] = useState('All');
@@ -73,7 +73,7 @@ export function CatalogPage() {
     material: idol.material,
     status: idol.status === 'available' ? 'Available' : 'Sold Out',
     label: ['Premium', 'Luxury'].includes(idol.category) ? 'Premium' : 'Eco Friendly',
-    image: idol.images?.[0] || '/ganesh-hero.png',
+    image: resolvedImages[idol.id] || idol.images?.[0] || '/ganesh-hero.png',
   }));
 
   // Filter Logic
