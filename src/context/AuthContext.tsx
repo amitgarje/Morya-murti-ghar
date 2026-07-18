@@ -10,9 +10,8 @@ interface AuthContextType {
   isCustomerLoggedIn: boolean;
   isAdminLoggedIn: boolean;
   currentCustomer: Customer | null;
-  loginCustomer: (name: string, mobile: string) => void;
+  loginUser: (name: string, mobile: string) => boolean;
   logoutCustomer: () => void;
-  loginAdmin: (password: string) => boolean;
   logoutAdmin: () => void;
 }
 
@@ -40,25 +39,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const loginCustomer = (name: string, mobile: string) => {
+  const loginUser = (name: string, mobile: string) => {
+    // Admin login check
+    if (name === 'amit@admin' && mobile === '9029263731') {
+      setIsAdminLoggedIn(true);
+      localStorage.setItem('morya_admin_active', 'true');
+      return true; // true means admin
+    }
+
+    // Customer login
     const customer: Customer = { name, mobile };
     setCurrentCustomer(customer);
     localStorage.setItem('morya_customer', JSON.stringify(customer));
+    return false; // false means customer
   };
 
   const logoutCustomer = () => {
     setCurrentCustomer(null);
     localStorage.removeItem('morya_customer');
-  };
-
-  const loginAdmin = (password: string): boolean => {
-    // Secret admin login password
-    if (password === 'admin@123' || password === 'morya@2026') {
-      setIsAdminLoggedIn(true);
-      localStorage.setItem('morya_admin_active', 'true');
-      return true;
-    }
-    return false;
   };
 
   const logoutAdmin = () => {
@@ -72,9 +70,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isCustomerLoggedIn: !!currentCustomer,
         isAdminLoggedIn,
         currentCustomer,
-        loginCustomer,
+        loginUser,
         logoutCustomer,
-        loginAdmin,
         logoutAdmin,
       }}
     >

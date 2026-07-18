@@ -1,31 +1,29 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { 
   Search, 
   MapPin, 
   RotateCcw, 
   ChevronDown
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useIdols } from '@/context/IdolContext';
 
 /* ─────────────────────────────────────────
-   Mock Data
+   Helper: convert Idol (from context) to card-display shape
 ───────────────────────────────────────── */
-const ALL_IDOLS = [
-  { id: 'G101', name: 'Siddhivinayak Swaroop', height: '2 Ft', material: 'Eco Friendly', price: '₹ 2,500', stock: 5, status: 'Available', label: 'Eco Friendly' },
-  { id: 'G102', name: 'Lalbaugcha Raja Replica', height: '3 Ft', material: 'POP', price: '₹ 4,500', stock: 2, status: 'Available', label: 'Premium' },
-  { id: 'G103', name: 'Dagadusheth Halwai', height: '1.5 Ft', material: 'Shadu Mati', price: '₹ 1,800', stock: 0, status: 'Booked', label: 'Eco Friendly' },
-  { id: 'G104', name: 'Peshwai Ganesh', height: '4 Ft', material: 'Eco Friendly', price: '₹ 6,500', stock: 1, status: 'Available', label: 'Premium' },
-  { id: 'G105', name: 'Bal Ganesha', height: '1 Ft', material: 'Shadu Mati', price: '₹ 950', stock: 8, status: 'Available', label: 'Eco Friendly' },
-  { id: 'G106', name: 'Swarnamurti', height: '2 Ft', material: 'POP', price: '₹ 3,200', stock: 0, status: 'Booked', label: 'Premium' },
-  { id: 'G107', name: 'Ashtavinayak Set', height: '1.5 Ft', material: 'Eco Friendly', price: '₹ 2,800', stock: 3, status: 'Available', label: 'Eco Friendly' },
-  { id: 'G108', name: 'Maharaja Ganpati', height: '5 Ft+', material: 'POP', price: '₹ 12,500', stock: 1, status: 'Available', label: 'Premium' },
-];
+function heightLabel(cm: number): string {
+  if (cm <= 12) return '1 Ft';
+  if (cm <= 18) return '1.5 Ft';
+  if (cm <= 24) return '2 Ft';
+  if (cm <= 36) return '3 Ft';
+  if (cm <= 48) return '4 Ft';
+  return '5 Ft+';
+}
 
 const HEIGHTS = ['All', '1 Ft', '1.5 Ft', '2 Ft', '3 Ft', '4 Ft', '5 Ft+'];
-const MATERIALS = ['All', 'Shadu Mati', 'POP', 'Eco Friendly'];
-const PRICES = ['Default', 'Low to High', 'High to Low'];
-const AVAILABILITIES = ['All', 'Available', 'Reserved', 'Booked'];
+const MATERIALS = ['All', 'Shadu Mati', 'Plaster of Paris', 'Fiber', 'Eco-Friendly', 'Marble'];
+const AVAILABILITIES = ['All', 'Available', 'Sold Out'];
 
 /* ─────────────────────────────────────────
    Animation Variants
@@ -46,10 +44,10 @@ const cardVariant = {
    Catalog Page Component
 ───────────────────────────────────────── */
 export function CatalogPage() {
+  const { idols: rawIdols } = useIdols();
   const [searchTerm, setSearchTerm] = useState('');
   const [heightFilter, setHeightFilter] = useState('All');
   const [materialFilter, setMaterialFilter] = useState('All');
-  const [priceFilter, setPriceFilter] = useState('Default');
   const [availabilityFilter, setAvailabilityFilter] = useState('All');
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -64,9 +62,19 @@ export function CatalogPage() {
     setSearchTerm('');
     setHeightFilter('All');
     setMaterialFilter('All');
-    setPriceFilter('Default');
     setAvailabilityFilter('All');
   };
+
+  // Map Idol context data to display-friendly shape
+  const ALL_IDOLS = rawIdols.map(idol => ({
+    id: idol.id,
+    name: idol.name,
+    height: heightLabel(idol.heightCm),
+    material: idol.material,
+    status: idol.status === 'available' ? 'Available' : 'Sold Out',
+    label: ['Premium', 'Luxury'].includes(idol.category) ? 'Premium' : 'Eco Friendly',
+    image: idol.images?.[0] || '/ganesh-hero.png',
+  }));
 
   // Filter Logic
   let filteredIdols = ALL_IDOLS.filter(idol => {
@@ -77,12 +85,12 @@ export function CatalogPage() {
     return true;
   });
 
-  // Sort Logic
-  if (priceFilter === 'Low to High') {
-    filteredIdols.sort((a, b) => parseInt(a.price.replace(/[^\d]/g, '')) - parseInt(b.price.replace(/[^\d]/g, '')));
-  } else if (priceFilter === 'High to Low') {
-    filteredIdols.sort((a, b) => parseInt(b.price.replace(/[^\d]/g, '')) - parseInt(a.price.replace(/[^\d]/g, '')));
-  }
+  // Sort so that Sold Out idols appear at the end
+  filteredIdols.sort((a, b) => {
+    if (a.status === 'Available' && b.status === 'Sold Out') return -1;
+    if (a.status === 'Sold Out' && b.status === 'Available') return 1;
+    return 0;
+  });
 
   return (
     <div style={{ background: '#FCFCFC', minHeight: '100vh', paddingTop: '80px', paddingBottom: '4rem' }}>
@@ -110,7 +118,7 @@ export function CatalogPage() {
           </h1>
           
           <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '1.05rem', color: '#6B7280', margin: '0 auto', lineHeight: 1.7 }}>
-            Browse our handcrafted Ganesh idols and reserve your favorite one before it is booked.
+            Browse our handcrafted Ganesh idols and contact us to reserve your favorite one.
           </p>
         </motion.div>
       </section>
@@ -153,7 +161,6 @@ export function CatalogPage() {
           {/* Dropdowns */}
           <FilterSelect label="Height" value={heightFilter} options={HEIGHTS} onChange={setHeightFilter} />
           <FilterSelect label="Material" value={materialFilter} options={MATERIALS} onChange={setMaterialFilter} />
-          <FilterSelect label="Price" value={priceFilter} options={PRICES} onChange={setPriceFilter} />
           <FilterSelect label="Status" value={availabilityFilter} options={AVAILABILITIES} onChange={setAvailabilityFilter} />
 
           {/* Reset Button */}
@@ -288,7 +295,7 @@ function FilterSelect({ label, value, options, onChange }: { label: string, valu
 }
 
 function IdolCard({ idol }: { idol: any }) {
-  const isBooked = idol.status === 'Booked';
+  const isSoldOut = idol.status === 'Sold Out';
 
   return (
     <motion.div 
@@ -324,12 +331,12 @@ function IdolCard({ idol }: { idol: any }) {
         {/* Status Badge */}
         <div style={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 10 }}>
           <span style={{
-            background: isBooked ? 'rgba(239,68,68,0.9)' : idol.status === 'Reserved' ? 'rgba(245,158,11,0.9)' : 'rgba(255,255,255,0.92)',
-            color: isBooked || idol.status === 'Reserved' ? 'white' : '#5B2C83',
+            background: isSoldOut ? 'rgba(239,68,68,0.9)' : 'rgba(255,255,255,0.92)',
+            color: isSoldOut ? 'white' : '#5B2C83',
             padding: '0.3rem 0.85rem', borderRadius: 9999,
             fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '0.72rem',
             boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-            border: isBooked || idol.status === 'Reserved' ? 'none' : '1px solid rgba(91,44,131,0.15)',
+            border: isSoldOut ? 'none' : '1px solid rgba(91,44,131,0.15)',
             backdropFilter: 'blur(8px)', letterSpacing: '0.03em',
           }}>
             {idol.status}
@@ -347,7 +354,7 @@ function IdolCard({ idol }: { idol: any }) {
             alt={idol.name}
             loading="lazy"
             style={{ width: '75%', height: '75%', objectFit: 'contain',
-              filter: isBooked
+              filter: isSoldOut
                 ? 'grayscale(100%) opacity(0.6)'
                 : 'drop-shadow(0 15px 30px rgba(91,44,131,0.18)) drop-shadow(0 5px 10px rgba(212,175,55,0.12))'
             }}
@@ -355,10 +362,10 @@ function IdolCard({ idol }: { idol: any }) {
         </motion.div>
 
         {/* Booked Overlay */}
-        {isBooked && (
+        {isSoldOut && (
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.55)', backdropFilter: 'blur(3px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5 }}>
             <div style={{ background: 'linear-gradient(135deg, #EF4444, #DC2626)', color: 'white', fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '1.1rem', padding: '0.5rem 2rem', transform: 'rotate(-8deg)', borderRadius: '10px', boxShadow: '0 8px 20px rgba(239,68,68,0.35)', letterSpacing: '0.1em' }}>
-              BOOKED
+              SOLD OUT
             </div>
           </div>
         )}
@@ -385,41 +392,24 @@ function IdolCard({ idol }: { idol: any }) {
           </span>
         </div>
 
-        {/* Price & Stock */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', marginBottom: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #F3F4F6' }}>
-          <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 800, fontSize: '1.4rem', color: '#5B2C83', letterSpacing: '-0.02em' }}>
-            {idol.price}
-          </span>
-          
-          {idol.stock > 0 && idol.stock <= 3 && !isBooked && (
-            <motion.span
-              animate={{ opacity: [1, 0.6, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              style={{ background: '#FEF3C7', color: '#92400E', padding: '0.2rem 0.6rem', borderRadius: '6px', fontFamily: 'Poppins, sans-serif', fontSize: '0.72rem', fontWeight: 700 }}
-            >
-              Only {idol.stock} Left!
-            </motion.span>
-          )}
-        </div>
-
         {/* Buttons */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '0.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '0.5rem', marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #F3F4F6' }}>
           <Link to={`/catalog/${idol.id}`} style={{ textDecoration: 'none' }}>
             <motion.button 
-              disabled={isBooked}
-              whileHover={!isBooked ? { scale: 1.02, boxShadow: '0 6px 20px rgba(91,44,131,0.35)' } : {}}
-              whileTap={!isBooked ? { scale: 0.98 } : {}}
+              disabled={isSoldOut}
+              whileHover={!isSoldOut ? { scale: 1.02, boxShadow: '0 6px 20px rgba(91,44,131,0.35)' } : {}}
+              whileTap={!isSoldOut ? { scale: 0.98 } : {}}
               style={{
                 width: '100%',
-                background: isBooked ? '#F3F4F6' : 'linear-gradient(135deg, #5B2C83, #7E4BAA)',
-                color: isBooked ? '#9CA3AF' : 'white', border: 'none', borderRadius: '12px',
+                background: isSoldOut ? '#F3F4F6' : 'linear-gradient(135deg, #5B2C83, #7E4BAA)',
+                color: isSoldOut ? '#9CA3AF' : 'white', border: 'none', borderRadius: '12px',
                 padding: '0.8rem 1rem', fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '0.95rem',
-                cursor: isBooked ? 'not-allowed' : 'pointer',
-                boxShadow: isBooked ? 'none' : '0 4px 14px rgba(91,44,131,0.25)',
+                cursor: isSoldOut ? 'not-allowed' : 'pointer',
+                boxShadow: isSoldOut ? 'none' : '0 4px 14px rgba(91,44,131,0.25)',
                 letterSpacing: '0.01em',
               }}
             >
-              {isBooked ? 'Unavailable' : 'Book Now'}
+              {isSoldOut ? 'Sold Out' : 'Contact Us'}
             </motion.button>
           </Link>
           

@@ -274,7 +274,7 @@ export function HeroSection() {
               margin: 0,
               maxWidth: '30rem',
             }}>
-              Discover beautifully handcrafted Ganesh idols and reserve your Bappa online with a simple and secure booking process. Celebrate this Ganesh Utsav with devotion and convenience.
+              Discover beautifully handcrafted Ganesh idols and contact us to reserve your Bappa. Celebrate this Ganesh Utsav with devotion and convenience.
             </p>
           </motion.div>
 

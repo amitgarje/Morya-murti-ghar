@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Upload, Download, Edit2, Trash2, Copy, Eye } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Eye } from 'lucide-react';
 import { AdminLayout } from '../components/AdminLayout';
 import { StatusBadge, Btn, Card, Modal, EmptyState } from '../components/AdminUI';
-import { mockIdols } from '../data/mockData';
+import { useIdols } from '@/context/IdolContext';
 import type { Idol } from '../data/mockData';
 
 const MATERIALS = ['All', 'Shadu Mati', 'Plaster of Paris', 'Fiber', 'Eco-Friendly', 'Marble'];
-const STATUSES = ['all', 'available', 'reserved', 'booked', 'delivered'];
+const STATUSES = ['all', 'available', 'sold out'];
 
 export function ManageIdolsPage() {
-  const [idols, setIdols] = useState<Idol[]>(mockIdols);
+  const { idols, addIdol, deleteIdol } = useIdols();
   const [search, setSearch] = useState('');
   const [filterMat, setFilterMat] = useState('All');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -28,10 +28,8 @@ export function ManageIdolsPage() {
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 2500); };
 
   const handleDelete = () => {
-    if (deleteId) { setIdols(prev => prev.filter(i => i.id !== deleteId)); setDeleteId(null); showToast('Idol deleted successfully'); }
+    if (deleteId) { deleteIdol(deleteId); setDeleteId(null); showToast('Idol deleted successfully'); }
   };
-
-  const discountedPrice = (price: number, disc: number) => Math.round(price * (1 - disc / 100));
 
   return (
     <AdminLayout>
@@ -61,8 +59,6 @@ export function ManageIdolsPage() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <Btn variant="ghost" size="sm" icon={<Upload size={14} />}>Import</Btn>
-          <Btn variant="ghost" size="sm" icon={<Download size={14} />}>Export</Btn>
           <Btn size="sm" icon={<Plus size={14} />} onClick={() => setAddOpen(true)}>Add New Idol</Btn>
         </div>
       </div>
@@ -104,27 +100,12 @@ export function ManageIdolsPage() {
                     <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.75rem', color: '#9CA3AF', margin: '2px 0 0' }}>{idol.heightCm}" • {idol.material}</p>
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                  <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '1rem', color: '#1F2937' }}>
-                    ₹{discountedPrice(idol.price, idol.discount).toLocaleString()}
-                  </span>
-                  {idol.discount > 0 && (
-                    <>
-                      <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.78rem', color: '#9CA3AF', textDecoration: 'line-through' }}>₹{idol.price.toLocaleString()}</span>
-                      <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.72rem', color: '#22C55E', fontWeight: 600 }}>{idol.discount}% off</span>
-                    </>
-                  )}
-                </div>
-                <div style={{ display: 'flex', gap: 6 }}>
+                <div style={{ display: 'flex', gap: 6, marginTop: 12 }}>
                   <Btn size="sm" variant="ghost" icon={<Eye size={12} />} style={{ flex: 1 }}>View</Btn>
                   <Btn size="sm" variant="secondary" icon={<Edit2 size={12} />} style={{ flex: 1 }}>Edit</Btn>
                   <button onClick={() => setDeleteId(idol.id)}
                     style={{ width: 30, borderRadius: 8, border: '1px solid rgba(239,68,68,0.2)', background: 'rgba(239,68,68,0.06)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EF4444' }}>
                     <Trash2 size={13} />
-                  </button>
-                  <button onClick={() => showToast('Idol duplicated!')}
-                    style={{ width: 30, borderRadius: 8, border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF' }}>
-                    <Copy size={13} />
                   </button>
                 </div>
               </div>
@@ -135,22 +116,8 @@ export function ManageIdolsPage() {
 
       {/* Add Idol Modal */}
       <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Add New Idol" width={620}>
-        <AddIdolForm onSave={(data) => {
-          const newIdol: Idol = {
-            id: `i${Date.now()}`,
-            name: data.name,
-            category: data.category,
-            heightCm: data.heightCm,
-            material: data.material as any,
-            price: data.price,
-            discount: data.discount,
-            stock: data.stock,
-            description: data.description,
-            images: [data.imageUrl || '/ganesh-hero.png'],
-            createdAt: new Date().toISOString().slice(0, 10),
-            status: 'available'
-          };
-          setIdols(prev => [newIdol, ...prev]);
+        <AddIdolForm onSave={async (formData) => {
+          await addIdol(formData);
           setAddOpen(false);
           showToast('Idol added successfully!');
         }} />
@@ -185,34 +152,49 @@ interface AddFormData {
   category: string;
   heightCm: number;
   material: string;
-  price: number;
-  discount: number;
-  stock: number;
   description: string;
-  imageUrl: string;
+  status: string;
 }
 
-function AddIdolForm({ onSave }: { onSave: (d: AddFormData) => void }) {
+function AddIdolForm({ onSave }: { onSave: (d: FormData) => void }) {
   const [form, setForm] = useState<AddFormData>({
     name: '',
     category: 'Traditional',
     heightCm: 24,
     material: 'Shadu Mati',
-    price: 0,
-    discount: 0,
-    stock: 1,
     description: '',
-    imageUrl: '/ganesh-hero.png'
+    status: 'available'
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const set = (k: keyof AddFormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
-    setForm(prev => ({ ...prev, [k]: ['heightCm', 'price', 'discount', 'stock'].includes(k) ? Number(e.target.value) : e.target.value }));
+    setForm(prev => ({ ...prev, [k]: ['heightCm'].includes(k) ? Number(e.target.value) : e.target.value }));
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('name', form.name);
+    formData.append('category', form.category);
+    formData.append('heightCm', form.heightCm.toString());
+    formData.append('material', form.material);
+    formData.append('description', form.description);
+    formData.append('status', form.status);
+    
+    if (imageFile) {
+      formData.append('image', imageFile);
+    } else {
+      alert("Please select an image");
+      return;
+    }
+    
+    onSave(formData);
+  };
 
   const inputStyle: React.CSSProperties = { width: '100%', padding: '9px 12px', borderRadius: 10, border: '1px solid rgba(0,0,0,0.1)', fontFamily: 'Poppins, sans-serif', fontSize: '0.83rem', color: '#374151', outline: 'none', boxSizing: 'border-box' };
   const labelStyle: React.CSSProperties = { fontFamily: 'Poppins, sans-serif', fontSize: '0.78rem', color: '#6B7280', fontWeight: 500, marginBottom: 6, display: 'block' };
 
   return (
-    <form onSubmit={e => { e.preventDefault(); onSave(form); }} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
         <div><label style={labelStyle}>Idol Name *</label><input required value={form.name} onChange={set('name')} placeholder="e.g. Shree Siddhi Vinayak" style={inputStyle} /></div>
         <div><label style={labelStyle}>Category</label>
@@ -226,36 +208,35 @@ function AddIdolForm({ onSave }: { onSave: (d: AddFormData) => void }) {
             {['Shadu Mati', 'Plaster of Paris', 'Fiber', 'Eco-Friendly', 'Marble'].map(m => <option key={m}>{m}</option>)}
           </select>
         </div>
-        <div><label style={labelStyle}>Price (₹) *</label><input required type="number" value={form.price || ''} onChange={set('price')} placeholder="0" style={inputStyle} /></div>
-        <div><label style={labelStyle}>Discount (%)</label><input type="number" value={form.discount || ''} onChange={set('discount')} min={0} max={100} placeholder="0" style={inputStyle} /></div>
-        <div><label style={labelStyle}>Stock</label><input type="number" value={form.stock} onChange={set('stock')} min={0} style={inputStyle} /></div>
+        <div style={{ gridColumn: 'span 2' }}>
+          <label style={labelStyle}>Status</label>
+          <select value={form.status} onChange={set('status')} style={inputStyle}>
+            <option value="available">Available</option>
+            <option value="sold out">Sold Out</option>
+          </select>
+        </div>
       </div>
       <div><label style={labelStyle}>Description</label><textarea value={form.description} onChange={set('description')} rows={3} placeholder="Describe the idol..." style={{ ...inputStyle, resize: 'vertical' }} /></div>
       
-      {/* Image URL / Selection Section */}
+      {/* Real Image Upload */}
       <div>
-        <label style={labelStyle}>Idol Image URL / Path</label>
-        <input value={form.imageUrl} onChange={set('imageUrl')} placeholder="e.g., /ganesh-hero.png or online URL" style={inputStyle} />
-      </div>
-
-      {/* Upload image simulator */}
-      <div style={{ border: '2px dashed rgba(91,44,131,0.2)', borderRadius: 12, padding: '16px', textAlign: 'center', cursor: 'pointer', background: '#F9FAFB' }}
-           onClick={() => {
-             // Simply simulate setting default image path on click
-             setForm(prev => ({ ...prev, imageUrl: '/ganesh-hero.png' }));
-           }}>
-        <div style={{ fontSize: '1.5rem', marginBottom: 6 }}>📷</div>
-        <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.82rem', color: '#9CA3AF', margin: 0 }}>Click to simulate upload (auto-sets placeholder)</p>
-        <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.72rem', color: '#C4C4C4', margin: '4px 0 0' }}>Current file preview: {form.imageUrl || 'None'}</p>
-      </div>
-
-      {form.price > 0 && (
-        <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(91,44,131,0.04)', border: '1px solid rgba(91,44,131,0.1)' }}>
-          <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.8rem', color: '#5B2C83', margin: 0 }}>
-            Final Price: ₹{Math.round(form.price * (1 - form.discount / 100)).toLocaleString()} {form.discount > 0 ? `(${form.discount}% off ₹${form.price.toLocaleString()})` : ''}
-          </p>
+        <label style={labelStyle}>Idol Image File *</label>
+        <div style={{ border: '2px dashed rgba(91,44,131,0.2)', borderRadius: 12, padding: '16px', textAlign: 'center', cursor: 'pointer', background: '#F9FAFB' }}>
+          <input 
+            type="file" 
+            accept="image/jpeg, image/png, image/jpg, image/webp"
+            required
+            onChange={e => {
+              if (e.target.files && e.target.files[0]) {
+                setImageFile(e.target.files[0]);
+              }
+            }}
+            style={{ width: '100%', cursor: 'pointer' }}
+          />
+          {imageFile && <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.75rem', color: '#5B2C83', marginTop: '8px' }}>Selected: {imageFile.name}</p>}
         </div>
-      )}
+      </div>
+
       <Btn type="submit" icon={<Plus size={14} />}>Save Idol</Btn>
     </form>
   );

@@ -2,12 +2,12 @@ import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
 const idols = [
-  { name: 'Siddhivinayak', height: '2 feet', material: 'Premium POP', price: '₹2,500', tag: 'Bestseller', color: '#5B2C83', image: '/idol-siddhivinayak.png' },
-  { name: 'Panchamukhi', height: '3 feet', material: 'Natural Clay', price: '₹4,200', tag: 'Eco-Friendly', color: '#22C55E', image: '/idol-panchamukhi.png' },
-  { name: 'Swarnamukhi', height: '1.5 feet', material: 'Gold-Painted POP', price: '₹1,800', tag: 'Premium', color: '#D4AF37', image: '/idol-golden.png' },
-  { name: 'Mahaganesha', height: '4 feet', material: 'Fiber Glass', price: '₹8,500', tag: 'Exclusive', color: '#EF4444', image: '/idol-mahaganesha.png' },
-  { name: 'Bal Ganesh', height: '1 foot', material: 'Natural Clay', price: '₹950', tag: 'Popular', color: '#5B2C83', image: '/idol-bal.png' },
-  { name: 'Shahi Ganesh', height: '3.5 feet', material: 'Premium POP', price: '₹5,500', tag: 'New', color: '#D4AF37', image: '/idol-golden.png' },
+  { name: 'Siddhivinayak', height: '2 feet', material: 'Premium POP', tag: 'Bestseller', color: '#5B2C83', image: '/idol-siddhivinayak.png' },
+  { name: 'Panchamukhi', height: '3 feet', material: 'Natural Clay', tag: 'Eco-Friendly', color: '#22C55E', image: '/idol-panchamukhi.png' },
+  { name: 'Swarnamukhi', height: '1.5 feet', material: 'Gold-Painted POP', tag: 'Premium', color: '#D4AF37', image: '/idol-golden.png' },
+  { name: 'Mahaganesha', height: '4 feet', material: 'Fiber Glass', tag: 'Exclusive', color: '#EF4444', image: '/idol-mahaganesha.png' },
+  { name: 'Bal Ganesh', height: '1 foot', material: 'Natural Clay', tag: 'Popular', color: '#5B2C83', image: '/idol-bal.png' },
+  { name: 'Shahi Ganesh', height: '3.5 feet', material: 'Premium POP', tag: 'New', color: '#D4AF37', image: '/idol-golden.png' },
 ];
 
 export function CatalogPreviewSection() {
@@ -81,19 +81,18 @@ export function CatalogPreviewSection() {
                   <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.8rem', color: '#9CA3AF' }}>📏 {idol.height}</span>
                   <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '0.8rem', color: '#9CA3AF' }}>🏺 {idol.material}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '1.25rem', color: '#5B2C83' }}>{idol.price}</span>
-                  <button style={{
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                  <a href="/catalog" style={{
                     background: '#5B2C83', color: 'white', border: 'none', borderRadius: 9999,
                     padding: '0.5rem 1.25rem', cursor: 'pointer',
                     fontFamily: 'Outfit, sans-serif', fontWeight: 500, fontSize: '0.875rem',
-                    transition: 'all 0.2s',
+                    transition: 'all 0.2s', textDecoration: 'none'
                   }}
                     onMouseEnter={e => { e.currentTarget.style.background = '#3E1B5C'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = '#5B2C83'; }}
                   >
-                    Book Now
-                  </button>
+                    View Details
+                  </a>
                 </div>
               </div>
             </motion.div>

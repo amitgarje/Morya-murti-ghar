@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Package, BookOpen, ClipboardList, Users,
   Wand2, Settings, LogOut, ChevronLeft, ChevronRight,
-  Zap,
+  Zap, BarChart2,
 } from 'lucide-react';
 
 const NAV = [
@@ -13,9 +13,11 @@ const NAV = [
   { label: 'Bookings', to: '/admin/bookings', icon: BookOpen },
   { label: 'Offline Bookings', to: '/admin/offline-bookings', icon: ClipboardList },
   { label: 'Customers', to: '/admin/customers', icon: Users },
+  { label: 'Analytics', to: '/admin/analytics', icon: BarChart2 },
   { label: 'Invitation Studio', to: '/admin/invitation', icon: Wand2 },
   { label: 'Settings', to: '/admin/settings', icon: Settings },
 ];
+
 
 interface SidebarProps {
   collapsed: boolean;

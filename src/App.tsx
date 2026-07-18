@@ -8,22 +8,22 @@ import { InvitationStudioPage } from '@/pages/InvitationStudioPage';
 import { InvitationViewPage } from '@/pages/InvitationViewPage';
 import { AboutPage } from '@/pages/AboutPage';
 import { ContactPage } from '@/pages/ContactPage';
-import { LoginPage } from '@/pages/LoginPage';
 import { Footer } from '@/components/layout/Footer';
 import { FloatingButtons } from '@/components/layout/FloatingButtons';
 import { Loader } from '@/components/layout/Loader';
 
 // Auth Provider & Guard
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { LoginPage } from '@/pages/LoginPage';
 
 // Admin Imports
-import { AdminLoginPage } from '@/admin/pages/AdminLoginPage';
 import { AdminDashboardPage } from '@/admin/pages/AdminDashboardPage';
 import { ManageIdolsPage } from '@/admin/pages/ManageIdolsPage';
 import { BookingsPage } from '@/admin/pages/BookingsPage';
-import { BookingDetailsPage } from '@/admin/pages/BookingDetailsPage';
 import { OfflineBookingsPage } from '@/admin/pages/OfflineBookingsPage';
 import { CustomersPage } from '@/admin/pages/CustomersPage';
+import { AnalyticsPage } from '@/admin/pages/AnalyticsPage';
+import { BookingDetailsPage } from '@/admin/pages/BookingDetailsPage';
 import { InvitationStudioPage as AdminInvitationStudioPage } from '@/admin/pages/InvitationStudioPage';
 import { SettingsPage } from '@/admin/pages/SettingsPage';
 
@@ -31,9 +31,7 @@ function AdminRouteGuard({ children }: { children: React.ReactNode }) {
   const { isAdminLoggedIn } = useAuth();
   
   if (!isAdminLoggedIn) {
-    // If not logged in as admin, redirect to home page. 
-    // This hides the admin paths from guessing.
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
 }
@@ -56,10 +54,10 @@ function AppContent() {
           <Route path="/invitation/view/:id" element={<InvitationViewPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/login" element={<LoginPage />} />
 
-          {/* Secret Admin Login Route */}
-          <Route path="/morya-admin-secure" element={<AdminLoginPage />} />
+          {/* Secret Admin Login Route & Customer Login */}
+          <Route path="/morya-admin-secure" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage />} />
 
           {/* Protected Admin Routes */}
           <Route path="/admin" element={<AdminRouteGuard><AdminDashboardPage /></AdminRouteGuard>} />
@@ -68,6 +66,7 @@ function AppContent() {
           <Route path="/admin/bookings/:id" element={<AdminRouteGuard><BookingDetailsPage /></AdminRouteGuard>} />
           <Route path="/admin/offline-bookings" element={<AdminRouteGuard><OfflineBookingsPage /></AdminRouteGuard>} />
           <Route path="/admin/customers" element={<AdminRouteGuard><CustomersPage /></AdminRouteGuard>} />
+          <Route path="/admin/analytics" element={<AdminRouteGuard><AnalyticsPage /></AdminRouteGuard>} />
           <Route path="/admin/invitation" element={<AdminRouteGuard><AdminInvitationStudioPage /></AdminRouteGuard>} />
           <Route path="/admin/settings" element={<AdminRouteGuard><SettingsPage /></AdminRouteGuard>} />
           
@@ -81,13 +80,17 @@ function AppContent() {
   );
 }
 
+import { IdolProvider } from '@/context/IdolContext';
+
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <ScrollToTop />
-        <AppContent />
-      </Router>
+      <IdolProvider>
+        <Router>
+          <ScrollToTop />
+          <AppContent />
+        </Router>
+      </IdolProvider>
     </AuthProvider>
   );
 }

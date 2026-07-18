@@ -10,6 +10,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/admin/bookings': 'Bookings',
   '/admin/offline-bookings': 'Offline Bookings',
   '/admin/customers': 'Customers',
+  '/admin/analytics': 'Analytics',
   '/admin/invitation': 'Invitation Studio',
   '/admin/settings': 'Settings',
 };
